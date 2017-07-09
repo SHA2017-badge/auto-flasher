@@ -20,7 +20,6 @@ Then start this for every usb-device-path:
 
 	while true; do ./auto_flash.sh /dev/tty_badge_1.2.4; done
 
-Added a screenrc for convenience. (NOTE: you should update it to use the
-correct paths)
+Added a screenrc for convenience.
 
 	screen -c ./screenrc

@@ -2,7 +2,6 @@ startup_message off
 
 caption always "%?%F%{=b by}%:%{=b gy}%? %c %{=b .w}%{= .k}|%{= .w} %-w%{=b .w}%n %t%{= .w}%+w %{= .k}|%{= .w} %{=b .w}%h"
 
-screen -t 'badge-1.2.1' bash -c 'while true; do ./auto_flash.sh /dev/tty_badge_1.2.1; done'
-screen -t 'badge-1.2.2' bash -c 'while true; do ./auto_flash.sh /dev/tty_badge_1.2.2; done'
-screen -t 'badge-1.2.3' bash -c 'while true; do ./auto_flash.sh /dev/tty_badge_1.2.3; done'
-screen -t 'badge-1.2.4' bash -c 'while true; do ./auto_flash.sh /dev/tty_badge_1.2.4; done'
+sessionname auto-flasher
+
+screen -t 'discover' bash -c './screen_discover.sh'
