@@ -1,6 +1,15 @@
 # auto-flasher
 
 
+submodules
+----------
+
+Install the esptool with:
+
+	git submodule init
+	git submodule update
+
+
 install udev rule
 -----------------
 
