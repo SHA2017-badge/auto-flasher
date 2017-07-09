@@ -18,6 +18,7 @@ esptool="$esptool_path/esptool.py"
 esptool_opts="--chip esp32 --port $dev --baud 921600 --before default_reset --after hard_reset"
 
 flash_opts="-z --flash_mode dio --flash_freq 40m --flash_size detect"
+# could add --verify
 
 # NOTE: these offsets have to match partitions.csv!
 flash_part1=" 0x1000  ./firmware/bootloader.bin"
@@ -36,6 +37,10 @@ echo "=== flashing firmware ==="
 python $esptool $esptool_opts write_flash $flash_opts $flash_part1 $flash_part2 $flash_part3
 
 echo "=== waiting until device is removed ==="
+# do an extra sleep to give the OS some time to recreate the device
+# after reboot.
+sleep 1
+
 while [ -e $dev ]; do
 	sleep 1
 done
