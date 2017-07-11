@@ -4,4 +4,4 @@ caption always "%?%F%{=b by}%:%{=b gy}%? %c %{=b .w}%{= .k}|%{= .w} %-w%{=b .w}%
 
 sessionname auto-flasher
 
-screen -t 'discover' bash -c './screen_discover.sh'
+screen -t 'discover' './screen_discover.pl'
