@@ -13,7 +13,7 @@ while (1) {
 			my $dev = "/dev/$file";
 			if ( -r $dev && ! $seen{$dev}++ ) {
 				my $short = substr($file, 10);
-				print("found $dev ($short)");
+				print("found $dev ($short)\n");
 				system("screen -X -S auto-flasher screen -t '$short' bash -c 'while true; do ./auto_flash.pl $dev; done'");
 			}
 		}
