@@ -24,7 +24,7 @@ my $flash_opts="-z --flash_mode dio --flash_freq 40m --flash_size detect";
 # NOTE: these offsets have to match partitions.csv!
 my $flash_part1=" 0x1000  ./firmware/bootloader.bin";
 my $flash_part2="0x10000  ./firmware/sha2017-badge.bin";
-my $flash_part3=" 0x8000  ./firmware/partitions.bin";
+my $flash_part3=" 0x8000  ./firmware/partitions.bin"; # NOTE: updated if flash size is known.
 
 print "=== waiting for device '$dev' ===\n";
 while ( ! -r $dev ) {
@@ -32,6 +32,15 @@ while ( ! -r $dev ) {
 }
 
 my $t_start = time();
+
+print "=== request flash size ===\n";
+my $res = `python $esptool $esptool_opts flash_id`;
+print $res;
+my $size;
+if ($res =~ /Detected flash size: (\d+MB)/) {
+	$size = $1;
+	$flash_part3=" 0x8000  ./firmware/partitions-$size.bin";
+}
 
 print "=== erasing flash ===\n";
 system("python $esptool $esptool_opts erase_flash");
