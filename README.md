@@ -27,7 +27,7 @@ repository itself)
 
 Then start this for every usb-device-path:
 
-	while true; do ./auto_flash.sh /dev/tty_badge_1.2.4; done
+	while true; do ./auto_flash.pl /dev/tty_badge_1.2.4; done
 
 Added a screenrc for convenience.
 
