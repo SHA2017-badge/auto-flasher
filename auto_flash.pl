@@ -19,7 +19,6 @@ my $esptool = "$esptool_path/esptool.py";
 my $esptool_opts="--chip esp32 --port $dev --baud 921600 --before default_reset --after hard_reset";
 
 my $flash_opts="-z --flash_mode dio --flash_freq 40m --flash_size detect";
-# could add --verify
 
 # NOTE: these offsets have to match partitions.csv!
 my $flash_part1=" 0x1000  ./firmware/bootloader.bin";
