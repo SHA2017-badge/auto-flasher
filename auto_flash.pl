@@ -21,9 +21,11 @@ my $esptool_opts="--chip esp32 --port $dev --baud 921600 --before default_reset 
 my $flash_opts="-z --flash_mode dio --flash_freq 40m --flash_size detect";
 
 # NOTE: these offsets have to match partitions.csv!
-my $flash_part1=" 0x1000  ./firmware/bootloader.bin";
-my $flash_part2="0x10000  ./firmware/sha2017-badge.bin";
-my $flash_part3=" 0x8000  ./firmware/partitions.bin"; # NOTE: updated if flash size is known.
+my @flash_parts = qw(
+	 0x1000  ./firmware/bootloader.bin
+	0x10000  ./firmware/sha2017-badge.bin
+	 0x8000  ./firmware/partitions-$size.bin
+);
 
 print "=== waiting for device '$dev' ===\n";
 while ( ! -r $dev ) {
@@ -38,7 +40,6 @@ print $res;
 my $size;
 if ($res =~ /Detected flash size: (\d+MB)/) {
 	$size = $1;
-	$flash_part3=" 0x8000  ./firmware/partitions-$size.bin";
 }
 
 print "=== erasing flash ===\n";
@@ -46,7 +47,9 @@ system("python $esptool $esptool_opts erase_flash");
 my $t_erase_done = time();
 
 print "=== flashing firmware ===\n";
-system("python $esptool $esptool_opts write_flash $flash_opts $flash_part1 $flash_part2 $flash_part3");
+my $flash_parts = "@flash_parts";
+$flash_parts =~ s/\$size\b/$size/g;
+system("python $esptool $esptool_opts write_flash $flash_opts $flash_parts");
 
 # do an extra sleep to give the OS some time to recreate the device
 # after reboot.
