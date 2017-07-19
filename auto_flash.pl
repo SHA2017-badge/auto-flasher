@@ -11,6 +11,8 @@ unless ( @ARGV == 1 ) {
 		"\n";
 }
 
+my $clear_string = `clear`;
+
 my $dev = shift;
 
 my $esptool_path = './esptool';
@@ -27,6 +29,8 @@ my @flash_parts = qw(
 	 0x8000  ./firmware/partitions-$size.bin
 );
 
+print "\033[44m";
+print $clear_string;
 print "=== waiting for device '$dev' ===\n";
 while ( ! -r $dev ) {
 	sleep 0.1;
@@ -34,6 +38,8 @@ while ( ! -r $dev ) {
 
 my $t_start = time();
 
+print "\033[41m";
+print $clear_string;
 print "=== request flash size ===\n";
 my $res = `python $esptool $esptool_opts flash_id`;
 print $res;
@@ -60,6 +66,8 @@ printf "Stats: erase=%.3fs flash=%.3fs total=%.3fs\n",
 	$t_erase_done - $t_start, $t_flash_done - $t_erase_done,
 	$t_flash_done - $t_start;
 
+print "\033[42m";
+print $clear_string;
 print "=== waiting until device is removed ===\n";
 while ( -e $dev ) {
 	sleep 0.1;
