@@ -10,9 +10,7 @@ submodules
 
 Install the esptool with:
 
-	$ git submodule init
-
-	$ git submodule update
+	$ git submodule update --init --recursive
 
 
 install udev rule
