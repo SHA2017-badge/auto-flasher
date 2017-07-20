@@ -25,6 +25,7 @@ my @flash_parts = qw(
 	 0x1000  ./firmware/bootloader.bin
 	0x10000  ./firmware/sha2017-badge.bin
 	 0x8000  ./firmware/partitions-$size.bin
+       0xb20000  ./firmware/fatfs-locfd.bin
 );
 
 print "=== waiting for device '$dev' ===\n";
