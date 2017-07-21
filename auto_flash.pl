@@ -28,6 +28,9 @@ my @flash_parts = qw(
      0x8000  ./firmware/partitions-$size.bin
 );
 
+print "=== Creating .zip for locfd  ===\n";
+system("sh updateZip.sh");
+
 print "=== waiting for device '$dev' ===\n";
 while ( ! -r $dev ) {
 	sleep 0.1;
