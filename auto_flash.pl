@@ -22,9 +22,10 @@ my $flash_opts="-z --flash_mode dio --flash_freq 40m --flash_size detect";
 
 # NOTE: these offsets have to match partitions.csv!
 my @flash_parts = qw(
-	 0x1000  ./firmware/bootloader.bin
-	0x10000  ./firmware/sha2017-badge.bin
-	 0x8000  ./firmware/partitions-$size.bin
+     0x1000  ./firmware/bootloader.bin
+    0x10000  ./firmware/sha2017-badge.bin
+   0x191000  ./firmware/locfd.zip
+     0x8000  ./firmware/partitions-$size.bin
 );
 
 print "=== waiting for device '$dev' ===\n";
