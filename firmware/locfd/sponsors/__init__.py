@@ -4,7 +4,7 @@
 import ugfx, badge, appglue, utime
 
 def show_sponsors():
-    for x in range(1, 8):
+    for x in range(1, 6):
         ugfx.clear(ugfx.WHITE)
         try:
             badge.eink_png(0,0,'/sponsors/sponsor%s.png' % x)
