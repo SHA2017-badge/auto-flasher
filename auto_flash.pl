@@ -28,8 +28,10 @@ my @flash_parts = qw(
      0x8000  ./firmware/partitions-$size.bin
 );
 
-print "=== Creating .zip for locfd  ===\n";
-system("sh updateZip.sh");
+unless ( -f './firmware/locfd.zip' ) {
+	print "=== Creating .zip for locfd  ===\n";
+	system("bash updateZip.sh") and die "Failed to build locfd.zip: $?\n";
+}
 
 print "=== waiting for device '$dev' ===\n";
 while ( ! -r $dev ) {
@@ -47,13 +49,13 @@ if ($res =~ /Detected flash size: (\d+MB)/) {
 }
 
 print "=== erasing flash ===\n";
-system("python $esptool $esptool_opts erase_flash");
+system("python $esptool $esptool_opts erase_flash") and die "Failed to erase flash: $?\n";
 my $t_erase_done = time();
 
 print "=== flashing firmware ===\n";
 my $flash_parts = "@flash_parts";
 $flash_parts =~ s/\$size\b/$size/g;
-system("python $esptool $esptool_opts write_flash $flash_opts $flash_parts");
+system("python $esptool $esptool_opts write_flash $flash_opts $flash_parts") and die "failed to flash images: $?\n";
 
 # do an extra sleep to give the OS some time to recreate the device
 # after reboot.
