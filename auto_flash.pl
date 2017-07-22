@@ -40,12 +40,19 @@ while ( ! -r $dev ) {
 
 my $t_start = time();
 
-print "=== request flash size ===\n";
-my $res = `python $esptool $esptool_opts flash_id`;
-print $res;
 my $size;
-if ($res =~ /Detected flash size: (\d+MB)/) {
-	$size = $1;
+if (defined $ENV{ESP_FLASH_SIZE} && $ENV{ESP_FLASH_SIZE} =~ /\A\d+MB\z/) {
+	$size = $ENV{ESP_FLASH_SIZE};
+} else {
+	print "=== request flash size ===\n";
+	my $res = `python $esptool $esptool_opts flash_id`;
+	die "Failed to request flash size: $?\n" if $?;
+	print $res;
+	if ($res =~ /Detected flash size: (\d+MB)/) {
+		$size = $1;
+	} else {
+		die "Failed to determine flash size.\n";
+	}
 }
 
 print "=== erasing flash ===\n";
