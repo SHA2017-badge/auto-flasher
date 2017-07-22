@@ -11,11 +11,20 @@ import badge
 import ugfx
 import urandom
 import deepsleep
-import time
 
 def game_of_life():
     badge.eink_init()
     ugfx.init()
+    ugfx.input_init()
+    ugfx.input_attach(ugfx.JOY_RIGHT, reboot)
+    ugfx.input_attach(ugfx.JOY_LEFT, reboot)
+    ugfx.input_attach(ugfx.JOY_UP, reboot)
+    ugfx.input_attach(ugfx.JOY_DOWN, reboot)
+    ugfx.input_attach(ugfx.JOY_RIGHT, reboot)
+    ugfx.input_attach(ugfx.BTN_A, reboot)
+    ugfx.input_attach(ugfx.BTN_B, reboot)
+    ugfx.input_attach(ugfx.BTN_START, reboot)
+    ugfx.input_attach(ugfx.BTN_SELECT, reboot)
     ugfx.clear(ugfx.WHITE)
     ugfx.flush()
     width = 37
@@ -39,6 +48,7 @@ def game_of_life():
                     ugfx.area(x * cell_width, y * cell_height, cell_width - 1, cell_height - 1, ugfx.BLACK)
                 else:
                     ugfx.area(x * cell_width, y * cell_height, cell_width - 1, cell_height - 1, ugfx.WHITE)
+        badge.eink_busy_wait()
         ugfx.flush()
 
     def alive_neighbours(x, y, wrap):
@@ -80,7 +90,6 @@ def game_of_life():
     while True:
         generation += 1
         display()
-        time.sleep(0.01)
         if not step() or generation > 50:
             seed()
             generation = 0
@@ -88,15 +97,4 @@ def game_of_life():
 def reboot(wut):
   deepsleep.reboot()
 
-ugfx.input_attach(ugfx.JOY_RIGHT, reboot)
-ugfx.input_attach(ugfx.JOY_LEFT, reboot)
-ugfx.input_attach(ugfx.JOY_UP, reboot)
-ugfx.input_attach(ugfx.JOY_DOWN, reboot)
-ugfx.input_attach(ugfx.JOY_RIGHT, reboot)
-ugfx.input_attach(ugfx.BTN_A, reboot)
-ugfx.input_attach(ugfx.BTN_B, reboot)
-ugfx.input_attach(ugfx.BTN_START, reboot)
-ugfx.input_attach(ugfx.BTN_SELECT, reboot)
-
 game_of_life()
-
