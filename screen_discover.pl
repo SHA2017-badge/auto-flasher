@@ -4,6 +4,10 @@ use strict;
 use warnings;
 use Time::HiRes qw/ sleep /;
 
+print "=== Creating .zip for locfd  ===\n";
+system("bash updateZip.sh") and die "Failed to build locfd.zip: $?\n";
+
+print "=== Collecting badge tty devices ===\n";
 my %seen;
 
 while (1) {
