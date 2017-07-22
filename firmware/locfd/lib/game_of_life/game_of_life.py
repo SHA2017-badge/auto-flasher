@@ -7,13 +7,11 @@
 ### Appname: GoL
 ### Built-in: no
 
-import math
-import array
-import os
 import badge
 import ugfx
 import urandom
 import deepsleep
+import time
 
 def game_of_life():
     badge.eink_init()
@@ -82,6 +80,7 @@ def game_of_life():
     while True:
         generation += 1
         display()
+        time.sleep(0.01)
         if not step() or generation > 50:
             seed()
             generation = 0
@@ -100,3 +99,4 @@ ugfx.input_attach(ugfx.BTN_START, reboot)
 ugfx.input_attach(ugfx.BTN_SELECT, reboot)
 
 game_of_life()
+
