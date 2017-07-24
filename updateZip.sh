@@ -4,10 +4,14 @@ set -e
 
 cd firmware/locfd
 
-# create with maximum compression to a temporary file.
-zip -r -9 ../locfd.zip.$$ .
+for type in sl n; do
+	cp media/hacking-$type.png media/hacking.png
 
-cd ..
+	# create with maximum compression to a temporary file.
+	zip -r -9 ../locfd-$type.zip.$$ .
 
-# always do an atomic move.
-mv locfd.zip.$$ locfd.zip
+	rm media/hacking.png
+
+	# always do an atomic move.
+	mv ../locfd-$type.zip.$$ ../locfd-$type.zip
+done
