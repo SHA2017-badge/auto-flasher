@@ -1,1 +1,2 @@
 KERNEL=="ttyUSB*", ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60", SYMLINK+="tty_badge_%s{devpath}"
+OWNER="root", GROUP="dialout", MODE="0660", ENV{DEVTYPE}=="usb_device", ENV{ID_VENDOR_ID}=="10c4", ENV{ID_MODEL_ID}=="ea60"

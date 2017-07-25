@@ -18,7 +18,7 @@ while (1) {
 			if ( -r $dev && ! $seen{$dev}++ ) {
 				my $short = substr($file, 10);
 				print("found $dev ($short)\n");
-				system("screen -X -S auto-flasher screen -t '$short' bash -c 'while true; do ./auto_flash.pl $dev; done'");
+				system("screen -X -S auto-flasher screen -t '$short' bash -c 'while true; do ./auto_flash.pl --skip-mkzip $dev; done'");
 			}
 		}
 		closedir($dir);

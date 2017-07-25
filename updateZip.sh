@@ -4,10 +4,14 @@ set -e
 
 cd firmware/locfd
 
-# create with maximum compression to a temporary file.
-zip -r -9 ../locfd.zip.$$ .
+for type in sl n f; do
+	cp media/badge_type_$type.png media/badge_type.png
 
-cd ..
+	# create with maximum compression to a temporary file.
+	zip -r -9 ../locfd-$type.zip.$$ . -x .ds_store
 
-# always do an atomic move.
-mv locfd.zip.$$ locfd.zip
+	rm media/badge_type.png
+
+	# always do an atomic move.
+	mv ../locfd-$type.zip.$$ ../locfd-$type.zip
+done
