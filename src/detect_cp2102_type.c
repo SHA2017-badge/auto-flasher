@@ -10,6 +10,8 @@
 
 #include <linux/usbdevice_fs.h>
 
+#define DEBUG
+
 #ifdef DEBUG
 void
 hexdump(unsigned char *buf, int size)
@@ -63,7 +65,6 @@ main(int argc, char *argv[])
 	printf("caps = 0x%08x\n", caps);
 #endif // DEBUG
 
-	/*
 	struct usbdevfs_disconnect_claim dc = {
 		.interface = 0,
 		.driver    = "usbfs",
@@ -74,7 +75,6 @@ main(int argc, char *argv[])
 		perror("ioctl()");
 		return 1;
 	}
-	*/
 
 	uint8_t buf[8+128] = { 0 };
 	uint8_t *ptr = buf;
@@ -112,9 +112,15 @@ main(int argc, char *argv[])
 		return 1;
 	}
 
+	int app_res = 0;
 	if (urb_res != NULL) {
 #ifdef DEBUG
 		printf("received urb.\n");
+		printf("urb.status        = %i\n", urb_res->status);
+		printf("urb.flags         = 0x%08x\n", urb_res->flags);
+		printf("urb.buffer_length = %i\n", urb_res->buffer_length);
+		printf("urb.actual_length = %i\n", urb_res->actual_length);
+		printf("urb.start_frame   = %i\n", urb_res->start_frame);
 		hexdump((void *) urb_res, sizeof(struct usbdevfs_urb));
 #endif // DEBUG
 
@@ -127,16 +133,40 @@ main(int argc, char *argv[])
 			hexdump(buf, buflen);
 #endif // DEBUG
 
+			if (buf[8] == 0xff) {
 			if (buflen == 8 + 128 && buf[6] == 0x80 && buf[7] == 0x00) {
 				printf("detected original CP2102\n");
-				return 10;
+				app_res = 10;
 			} else if (buflen == 8 + 1 && buf[6] == 0x01 && buf[7] == 0x00) {
 				printf("detected fake CP2102\n");
-				return 11;
+				app_res = 11;
+			}
 			}
 		}
 	}
 
-	printf("unknown chip.\n");
-	return 0;
+	int iface = 0;
+	err = ioctl(fd, USBDEVFS_RELEASEINTERFACE, &iface);
+	if (err != 0) {
+		perror("ioctl()");
+		return 1;
+	}
+
+	struct usbdevfs_ioctl cmd = {
+		.ifno       = 0,
+		.ioctl_code = USBDEVFS_CONNECT,
+		.data       = NULL,
+	};
+	err = ioctl(fd, USBDEVFS_IOCTL, &cmd);
+	if (err < 0) {
+		perror("ioctl()");
+		return 1;
+	}
+
+	if (app_res == 0)
+	{
+		printf("unknown chip.\n");
+	}
+
+	return app_res;
 }
