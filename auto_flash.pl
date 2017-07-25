@@ -3,11 +3,12 @@
 use strict;
 use warnings;
 no warnings 'portable';
+use Data::Dumper;
 use Getopt::Long;
 use Time::HiRes qw/ sleep time /;
 
 sub usage {
-	die "Usage: $0 [--no-remove] [--skip-mkzip] <usb-device>\n".
+	die "Usage: $0 [--force-flash-size={4MB,16MB}] [--force-badge-type={sl,n,f}] [--no-remove] [--skip-mkzip] <usb-device>\n".
 		"\n".
 		"  # $0 /dev/ttyUSB0 -- will flash USB0\n".
 		"\n";
@@ -103,16 +104,23 @@ sub dev_info {
 
 	return $dev_info;
 }
+
 my $no_remove = 0;
 my $skip_mkzip = 0;
+my $flash_size = $ENV{ESP_FLASH_SIZE};
+my $badge_type = $ENV{BADGE_TYPE};
 GetOptions(
+	"force-flash-size=s" => \$flash_size,
+	"force-badge-type=s" => \$badge_type,
 	"no-remove"  => \$no_remove,
 	"skip-mkzip" => \$skip_mkzip,
 ) or usage;
-
 usage unless @ARGV == 1;
 
 my $dev = shift;
+
+die "invalid flash size.\n" if defined $flash_size && $flash_size !~ /\A\d+MB\z/;
+die "invalid badge type.\n" if defined $badge_type && $badge_type !~ /\A(?:sl|n|f)\z/;
 
 my $esptool_path = './esptool';
 my $esptool = "$esptool_path/esptool.py";
@@ -139,41 +147,37 @@ while ( ! -r $dev ) {
 	sleep 0.1;
 }
 
-use Data::Dumper;
-my $dev_info = dev_info($dev);
-print "device info:\n".Dumper($dev_info);
-
 my $t_start = time();
 
-my $size;
-if (defined $ENV{ESP_FLASH_SIZE} && $ENV{ESP_FLASH_SIZE} =~ /\A\d+MB\z/) {
-	$size = $ENV{ESP_FLASH_SIZE};
-} else {
+unless (defined $flash_size) {
 	print "=== request flash size ===\n";
 	my $res = `python $esptool $esptool_opts flash_id`;
 	die "Failed to request flash size: $?\n" if $?;
 	print $res;
 	if ($res =~ /Detected flash size: (\d+MB)/) {
-		$size = $1;
+		$flash_size = $1;
 	} else {
 		die "Failed to determine flash size.\n";
 	}
 }
-my $type;
-if ($dev_info->{'product'} eq 'CP2102N USB to UART Bridge Controller') {
-	$type = 'n';
-} elsif ($dev_info->{'product'} eq 'CP2102 USB to UART Bridge Controller') {
-	system('./src/detect_cp2102_type', $dev_info->{'bus_id'});
-	if ($? == 10 << 8) {
-		$type = 'sl';
-	} elsif ($? == 11 << 8) {
-		$type = 'f';
+
+unless (defined $badge_type) {
+	my $dev_info = dev_info($dev);
+	print "device info:\n".Dumper($dev_info);
+	if ($dev_info->{'product'} eq 'CP2102N USB to UART Bridge Controller') {
+		$badge_type = 'n';
+	} elsif ($dev_info->{'product'} eq 'CP2102 USB to UART Bridge Controller') {
+		system('./src/detect_cp2102_type', $dev_info->{'bus_id'});
+		if ($? == 10 << 8) {
+			$badge_type = 'sl';
+		} elsif ($? == 11 << 8) {
+			$badge_type = 'f';
+		}
 	}
+	die "unknown product '$dev_info->{'product'}'.\n" unless defined $badge_type;
 }
 
-die "unknown product '$dev_info->{'product'}'.\n" unless defined $type;
-
-print "size='$size', type='$type'\n";
+print "size='$flash_size', type='$badge_type'\n";
 
 print "=== erasing flash ===\n";
 system("python $esptool $esptool_opts erase_flash") and die "Failed to erase flash: $?\n";
@@ -181,8 +185,8 @@ my $t_erase_done = time();
 
 print "=== flashing firmware ===\n";
 my $flash_parts = "@flash_parts";
-$flash_parts =~ s/\$size\b/$size/g;
-$flash_parts =~ s/\$type\b/$type/g;
+$flash_parts =~ s/\$size\b/$flash_size/g;
+$flash_parts =~ s/\$type\b/$badge_type/g;
 system("python $esptool $esptool_opts write_flash $flash_opts $flash_parts") and die "failed to flash images: $?\n";
 
 # do an extra sleep to give the OS some time to recreate the device
