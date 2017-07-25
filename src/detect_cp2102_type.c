@@ -63,6 +63,7 @@ main(int argc, char *argv[])
 	printf("caps = 0x%08x\n", caps);
 #endif // DEBUG
 
+	/*
 	struct usbdevfs_disconnect_claim dc = {
 		.interface = 0,
 		.driver    = "usbfs",
@@ -73,6 +74,7 @@ main(int argc, char *argv[])
 		perror("ioctl()");
 		return 1;
 	}
+	*/
 
 	uint8_t buf[16+64] = { 0 };
 	uint8_t *ptr = buf;
