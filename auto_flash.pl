@@ -160,8 +160,17 @@ if (defined $ENV{ESP_FLASH_SIZE} && $ENV{ESP_FLASH_SIZE} =~ /\A\d+MB\z/) {
 	}
 }
 my $type;
-$type = 'sl' if $dev_info->{'product'} eq 'CP2102 USB to UART Bridge Controller';
-$type = 'n' if $dev_info->{'product'} eq 'CP2102N USB to UART Bridge Controller';
+if ($dev_info->{'product'} eq 'CP2102N USB to UART Bridge Controller') {
+	$type = 'n';
+} elsif ($dev_info->{'product'} eq 'CP2102 USB to UART Bridge Controller') {
+	system('./src/detect_cp2102_type', $dev_info->{'bus_id'});
+	if ($? == 10 << 8) {
+		$type = 'sl';
+	} elsif ($? == 11 << 8) {
+		$type = 'f';
+	}
+}
+
 die "unknown product '$dev_info->{'product'}'.\n" unless defined $type;
 
 print "size='$size', type='$type'\n";
