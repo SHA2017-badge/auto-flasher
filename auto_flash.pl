@@ -166,7 +166,7 @@ unless (defined $badge_type) {
 	print "device info:\n".Dumper($dev_info);
 	if ($dev_info->{'product'} eq 'CP2102N USB to UART Bridge Controller') {
 		$badge_type = 'n';
-	} elsif ($dev_info->{'product'} eq 'CP2102 USB to UART Bridge Controller') {
+	} elsif ($dev_info->{'product'} eq 'CP2102 USB to UART Bridge Controller' || $dev_info->{'product'} eq 'SHA2017-Badge') {
 		system('./src/detect_cp2102_type', $dev_info->{'bus_id'});
 		if ($? == 10 << 8) {
 			$badge_type = 'sl';
