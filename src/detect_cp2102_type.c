@@ -134,10 +134,10 @@ main(int argc, char *argv[])
 #endif // DEBUG
 
 			if (buf[8] == 0xff) {
-			if (buflen == 8 + 128 && buf[6] == 0x80 && buf[7] == 0x00) {
+			if (buflen == 8 + 128 && buf[6] == 0x80 && buf[7] == 0x00 && urb_res->actual_length == 128) {
 				printf("detected original CP2102\n");
 				app_res = 10;
-			} else if (buflen == 8 + 1 && buf[6] == 0x01 && buf[7] == 0x00) {
+			} else if (buflen == 8 + 128 && buf[6] == 0x80 && buf[7] == 0x00 && urb_res->actual_length == 1) {
 				printf("detected fake CP2102\n");
 				app_res = 11;
 			}
