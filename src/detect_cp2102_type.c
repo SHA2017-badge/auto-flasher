@@ -76,7 +76,7 @@ main(int argc, char *argv[])
 	}
 	*/
 
-	uint8_t buf[16+64] = { 0 };
+	uint8_t buf[8+128] = { 0 };
 	uint8_t *ptr = buf;
 	*ptr++ = 0x80 | 0x40; // request type
 	*ptr++ = 0xff; // request
@@ -84,9 +84,9 @@ main(int argc, char *argv[])
 	*ptr++ = 0x37; // hi(descr)
 	*ptr++ = 0; // lo(index)
 	*ptr++ = 0; // hi(index)
-	*ptr++ = 64; // lo(length)
+	*ptr++ = 128; // lo(length)
 	*ptr++ = 0; // hi(length)
-	ptr = &ptr[64];
+	ptr = &ptr[128];
 	size_t size = ((intptr_t) ptr) - ((intptr_t) buf);
 	struct usbdevfs_urb urb = {
 		.usercontext   = NULL,
@@ -127,7 +127,7 @@ main(int argc, char *argv[])
 			hexdump(buf, buflen);
 #endif // DEBUG
 
-			if (buflen == 8 + 64 && buf[6] == 0x40 && buf[7] == 0x00) {
+			if (buflen == 8 + 128 && buf[6] == 0x80 && buf[7] == 0x00) {
 				printf("detected original CP2102\n");
 				return 10;
 			} else if (buflen == 8 + 1 && buf[6] == 0x01 && buf[7] == 0x00) {
